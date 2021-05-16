@@ -85,6 +85,11 @@ public abstract class AbstractConfig implements Serializable {
 
     protected final AtomicBoolean refreshed = new AtomicBoolean(false);
 
+    /**
+     * Is default or not
+     */
+    protected Boolean isDefault;
+
     private static String convertLegacyValue(String key, String value) {
         if (value != null && value.length() > 0) {
             if ("dubbo.service.max.retry.providers".equals(key)) {
@@ -318,7 +323,13 @@ public abstract class AbstractConfig implements Serializable {
                 && method.getReturnType() == void.class);
     }
 
-    private static Map<String, String> convert(Map<String, String> parameters, String prefix) {
+    /**
+     * @param parameters the raw parameters
+     * @param prefix     the prefix
+     * @return the parameters whose raw key will replace "-" to "."
+     * @revised 2.7.8 "private" to be "protected"
+     */
+    protected static Map<String, String> convert(Map<String, String> parameters, String prefix) {
         if (parameters == null || parameters.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -513,7 +524,7 @@ public abstract class AbstractConfig implements Serializable {
                             buf.append(" ");
                             buf.append(key);
                             buf.append("=\"");
-                            buf.append(value);
+                            buf.append(key.equals("password") ? "******" : value);
                             buf.append("\"");
                         }
                     }
@@ -604,5 +615,13 @@ public abstract class AbstractConfig implements Serializable {
         }
 
         return hashCode;
+    }
+
+    public Boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(Boolean isDefault) {
+        this.isDefault = isDefault;
     }
 }
